@@ -7,25 +7,35 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "vitest"
   },
   "dependencies": {
+    "@material-tailwind/react": "^2.1.4",
     "bcryptjs": "^2.4.3",
+    "formik": "^2.4.5",
     "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "mysql": "file:./shims/mysql",
     "next": "14.0.2",
+    "pg": "^8.11.3",
     "react": "^18",
     "react-dom": "^18",
+    "react-native-sqlite-storage": "file:./shims/react-native-sqlite-storage",
     "typeorm": "^0.3.17"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.5",
+    "@types/lodash": "^4.14.201",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.0.2",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
     "typescript": "^5",
-    "eslint-config-next": "14.0.2"
+    "vitest": "^0.34.6"
   }
 }

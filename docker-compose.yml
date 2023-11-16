@@ -3,7 +3,7 @@ services:
     image: postgres:15.4
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_USER:-admin}
-      POSTGRES_DB: ${POSTGRES_USER:-cyberauth}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-admin}
+      POSTGRES_DB: ${POSTGRES_DB:-cyberauth}
     ports:
       - 5434:5432
