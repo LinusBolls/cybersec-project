@@ -1,12 +1,13 @@
 import {
   Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn
 } from 'typeorm';
+import type { Relation } from "typeorm";
 import { Box } from './Box';
 
 @Entity()
 export class BoxCode {
-  @PrimaryGeneratedColumn()
-  id!: number;
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
   @Column("text")
   html!: string;
@@ -19,5 +20,5 @@ export class BoxCode {
 
   @OneToOne(() => Box)
   @JoinColumn()
-  box!: Box;
+  box!: Relation<Box>;
 }

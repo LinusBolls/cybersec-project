@@ -4,14 +4,14 @@ import jwt from 'jsonwebtoken';
 import { RefreshToken } from '../models/RefreshToken';
 import Config from '../config';
 import Env from '../env';
-import { AppDataSource } from '../ormconfig';
+import { AppDataSource, initializeDb } from '../ormconfig';
 
-const getAccessToken = (userId: number) => {
+const getAccessToken = (userId: string) => {
     const accessToken = jwt.sign({ sub: userId }, Env.accessTokenSecret, { expiresIn: Config.accessTokenExpiryMs });
 
     return accessToken;
 }
-const getRefreshToken = (userId: number) => {
+const getRefreshToken = (userId: string) => {
     const refreshToken = jwt.sign({ sub: userId }, Env.refreshTokenSecret, { expiresIn: Config.refreshTokenExpiryMs });
 
     return refreshToken;
@@ -43,9 +43,11 @@ const comparePassword = async (password: string, hash: string) => {
 }
 
 const loginUser = async (email: string, password: string) => {
+
+    await initializeDb();
     const userRepository = AppDataSource.getRepository(User);
 
-    const user = await userRepository.findOne({ email });
+    const user = await userRepository.findOneBy({ email });
 
     if (!user) {
         throw new Error('User not found');
@@ -61,15 +63,16 @@ const loginUser = async (email: string, password: string) => {
 };
 
 const registerUser = async (email: string, password: string) => {
+
+    await initializeDb();
     const userRepository = AppDataSource.getRepository(User);
 
-    const existingUser = await userRepository.findOne({ email });
+    const existingUser = await userRepository.findOneBy({ email });
     if (existingUser) {
         throw new Error('Email already in use');
     }
-
     const passwordHash = await hashPassword(password);
-    const newUser = userRepository.create({ email, passwordHash });
+    const newUser = userRepository.create({ email, passwordHash, permissions: [] });
     await userRepository.save(newUser);
 
     const accessToken = getAccessToken(newUser.id);
@@ -77,6 +80,9 @@ const registerUser = async (email: string, password: string) => {
     return { accessToken, refreshToken: "" };
 };
 const refreshToken = async (oldToken: string) => {
+
+    await initializeDb();
+
     if (!oldToken) {
         throw new Error('No token provided');
     }
@@ -90,7 +96,7 @@ const refreshToken = async (oldToken: string) => {
 
     const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
 
-    const storedToken = await refreshTokenRepository.findOne({ token: oldToken });
+    const storedToken = await refreshTokenRepository.findOneBy({ token: oldToken });
 
     if (!storedToken || storedToken.expiryDate.getTime() < new Date().getTime()) {
         throw new Error('Invalid or expired token');
