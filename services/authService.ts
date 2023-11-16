@@ -4,22 +4,42 @@ import jwt from 'jsonwebtoken';
 import { RefreshToken } from '../models/RefreshToken';
 import Config from '../config';
 import Env from '../env';
-import { AppDataSource } from './dbService';
+import { AppDataSource } from '../ormconfig';
 
 const getAccessToken = (userId: number) => {
-    const accessToken = jwt.sign({ userId }, Env.accessTokenSecret, { expiresIn: Config.accessTokenExpiryMs });
+    const accessToken = jwt.sign({ sub: userId }, Env.accessTokenSecret, { expiresIn: Config.accessTokenExpiryMs });
 
     return accessToken;
 }
 const getRefreshToken = (userId: number) => {
-    const refreshToken = jwt.sign({ userId }, Env.refreshTokenSecret, { expiresIn: Config.refreshTokenExpiryMs });
+    const refreshToken = jwt.sign({ sub: userId }, Env.refreshTokenSecret, { expiresIn: Config.refreshTokenExpiryMs });
 
     return refreshToken;
 }
+export const verifyAccessToken = (token: string) => {
+    const data = jwt.verify(token, Env.accessTokenSecret) as { sub: string, iat: number, exp: number };
+
+    return data;
+}
+export const verifyRefreshToken = (token: string) => {
+    const data = jwt.verify(token, Env.refreshTokenSecret) as { sub: string, iat: number, exp: number };
+
+    return data;
+}
+/**
+ * hashes the password using a salt and appends the salt to the hash.
+ */
 const hashPassword = async (password: string) => {
-    const hash = await bcrypt.hash(password, 10);
+    const saltRounds = 10;
+
+    const hash = await bcrypt.hash(password, saltRounds);
 
     return hash;
+}
+const comparePassword = async (password: string, hash: string) => {
+    const isValid = await bcrypt.compare(password, hash);
+
+    return isValid;
 }
 
 const loginUser = async (email: string, password: string) => {
@@ -30,15 +50,14 @@ const loginUser = async (email: string, password: string) => {
     if (!user) {
         throw new Error('User not found');
     }
-
-    const isValid = await bcrypt.compare(password, user.passwordHash);
+    const isValid = await comparePassword(password, user.passwordHash);
 
     if (!isValid) {
         throw new Error('Invalid credentials');
     }
-    const token = getAccessToken(user.id);
+    const accessToken = getAccessToken(user.id);
 
-    return token;
+    return { accessToken, refreshToken: "" };
 };
 
 const registerUser = async (email: string, password: string) => {
@@ -53,18 +72,18 @@ const registerUser = async (email: string, password: string) => {
     const newUser = userRepository.create({ email, passwordHash });
     await userRepository.save(newUser);
 
-    const token = getAccessToken(newUser.id);
+    const accessToken = getAccessToken(newUser.id);
 
-    return token;
+    return { accessToken, refreshToken: "" };
 };
 const refreshToken = async (oldToken: string) => {
     if (!oldToken) {
         throw new Error('No token provided');
     }
 
-    let payload = null;
+    let payload: ReturnType<typeof verifyRefreshToken> | null = null;
     try {
-        payload = jwt.verify(oldToken, Env.refreshTokenSecret);
+        payload = verifyRefreshToken(oldToken);
     } catch (e) {
         throw new Error('Invalid token');
     }
