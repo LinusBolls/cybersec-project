@@ -60,4 +60,26 @@ export const getBoxById = async (boxId: string) => {
         id: boxId,
     });
     return box;
+
 }
+export const updateBoxState = async (userId: string, boxId: string, newState: typeof BoxState[keyof typeof BoxState]) => {
+    await initializeDb();
+
+    const boxRepository = AppDataSource.getRepository(Box);
+
+    const box = await boxRepository.findOneBy({ id: boxId });
+
+    // Validate if the box exists
+    if (!box) {
+        throw new Error('Box not found');
+    }
+
+    if (box.author.id !== userId) {
+        throw new Error('User is not authorized to update this box');
+    }
+    box.state = newState;
+
+    await boxRepository.save(box);
+
+    return box;
+};
