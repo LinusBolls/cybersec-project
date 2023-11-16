@@ -10,17 +10,16 @@ import {
 import { Formik, Form, Field } from 'formik';
 import Link from "next/link";
 
-export function RegistrationForm() {
+export function LoginForm() {
 
   return <div className="flex items-center justify-center w-screen h-screen">
     <Formik
       initialValues={{
         email: '',
-        name: '',
         password: '',
       }}
       onSubmit={async (values) => {
-        const registerRes = await fetch("/api/auth/register", {
+        const registerRes = await fetch("/api/auth/login", {
           method: "POST",
           body: JSON.stringify(values),
         });
@@ -32,29 +31,12 @@ export function RegistrationForm() {
       <Form className="md:w-48 lg:w-1/4">
         <Card color="transparent" shadow={false}>
           <Typography variant="h4" color="blue-gray">
-            Sign Up
+            Sign In
           </Typography>
           <Typography color="gray" className="mt-1 font-normal">
-            Nice to meet you! Enter your details to register.
+            Welcome back!
           </Typography>
           <div className="mb-1 flex flex-col gap-6">
-            <label htmlFor="name">
-              <Typography variant="h6" color="blue-gray" className="-mb-3">
-                Your Name
-              </Typography>
-            </label>
-            <Field
-              type="name"
-              as={Input}
-              crossOrigin="anonymous"
-              id="name"
-              name="name"
-              placeholder="Your name"
-              className=" !border-t-blue-gray-200 focus:!border-t-gray-900 placeholder:text-gray-700"
-              labelProps={{
-                className: "before:content-none after:content-none",
-              }}
-            />
             <label htmlFor="email">
               <Typography variant="h6" color="blue-gray" className="-mb-3">
                 Your Email
@@ -98,24 +80,18 @@ export function RegistrationForm() {
                 color="gray"
                 className="flex items-center font-normal"
               >
-                I agree the
-                <a
-                  href="#"
-                  className="font-medium transition-colors hover:text-gray-900"
-                >
-                  &nbsp;Terms and Conditions
-                </a>
+                Remember me
               </Typography>
             }
             containerProps={{ className: "-ml-2.5" }}
           /> */}
           <Button className="mt-6" fullWidth type="submit">
-            Sign up
+            Sign in
           </Button>
           <Typography color="gray" className="mt-4 text-center font-normal">
-            Already have an account?{" "}
-            <Link href="/login" className="font-medium text-gray-900">
-              Sign In
+            Don't have an account yet?{" "}
+            <Link href="/register" className="font-medium text-gray-900">
+              Sign Up
             </Link>
           </Typography>
         </Card>

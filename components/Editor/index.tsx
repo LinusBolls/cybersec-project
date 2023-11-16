@@ -40,21 +40,27 @@ export default function Editor({ initialBox }: EditorProps) {
         onCodeChange();
     }, [html, css, js]);
 
-    return <div>
+    return <div style={{
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+        backgroundColor: "red",
 
-        <div className="flex p-1 gap-1">
+        overflow: "hidden",
+    }}>
+        <div className="flex p-1 gap-1 h-2/5 bg-black">
             <textarea onChange={(e) => {
                 setHtml(e.currentTarget.value);
-            }} value={html} className="w-1/3 h-1/3 bg-gray-900" />
+            }} value={html} className="w-full h-full bg-gray-900" />
             <textarea onChange={(e) => {
                 setCss(e.currentTarget.value);
-            }} value={css} className="w-1/3 h-1/3 bg-gray-900" />
+            }} value={css} className="w-full h-full bg-gray-900" />
             <textarea onChange={(e) => {
                 setJs(e.currentTarget.value);
-            }} value={js} className="w-1/3 h-1/3 bg-gray-900" />
+            }} value={js} className="w-full h-full bg-gray-900" />
         </div>
 
-        <h1 className="text-red-300">{initialBox.meta.title}</h1>
-        <iframe ref={iframeRef} sandbox="allow-scripts" srcDoc={srcDoc} className="w-2/3 h-full bg-gray-900" />
+        {/* <h1 className="text-red-300">{initialBox.meta.title}</h1> */}
+        <iframe ref={iframeRef} sandbox="allow-forms allow-modals allow-pointer-lock allow-same-origin allow-scripts allow-presentation" srcDoc={srcDoc} className="flex flex-1 bg-gray-900" />
     </div>
 }
