@@ -1,3 +1,4 @@
+import Env from "./env";
 import { Box } from "./models/Box";
 import { BoxCode } from "./models/BoxCode";
 import { RefreshToken } from "./models/RefreshToken";
@@ -7,18 +8,17 @@ import { DataSource } from "typeorm";
 export const AppDataSource = new DataSource({
     synchronize: true,
     type: "postgres",
-    host: "localhost",
-    port: 5434,
-    username: "postgres",
-    password: "admin",
-    database: "cyberauth",
+    host: Env.db.host,
+    port: Env.db.port,
+    username: Env.db.username,
+    password: Env.db.password,
+    database: Env.db.database,
     entities: [
         User,
         RefreshToken,
         Box,
         BoxCode,
     ],
-    // entities: [__dirname + '/../models/*.ts'],
 });
 
 export const initializeDb = async () => {
