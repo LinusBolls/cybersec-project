@@ -1,10 +1,10 @@
 import BoxState from "@/boxState";
 import Env from "@/env";
 import { verifyAccessToken } from "@/services/authService";
-import { updateBoxState } from "@/services/boxService";
+import { updateBoxCode as updateCodeBox, updateBoxMeta as updateBox, updateBoxState } from "@/services/boxService";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function PATCH(req: NextRequest, { params: { params: { boxId } } }: any) {
+export async function PUT(req: NextRequest, { params: { boxId } }: { params: { boxId: string } }) {
 
     try {
         const accessToken = req.cookies.get("access_token")?.value;
@@ -14,16 +14,16 @@ export async function PATCH(req: NextRequest, { params: { params: { boxId } } }:
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-        const { state } = await req.json();
+        const { meta: { title }, code: { html, css, js } } = await req.json();
 
-        if (!state) {
-            return NextResponse.json({ ok: 1 }, { status: 200 });
-        }
+        const updatedCodeBox = await updateCodeBox(user.sub, boxId, html, css, js);
 
-        if (!Object.values(BoxState).includes(state)) {
-            return NextResponse.json({ error: 'Invalid state' }, { status: 400 });
-        }
-        const updatedBox = await updateBoxState(user.sub, boxId, state);
+        const updatedBox = await updateBox(user.sub, boxId, title);
+
+        updatedBox.boxCode.html = updatedCodeBox.html;
+        updatedBox.boxCode.css = updatedCodeBox.css;
+        updatedBox.boxCode.js = updatedCodeBox.js;
+        updatedBox.title = updatedBox.title;
 
         return NextResponse.json(updatedBox, { status: 200 });
 

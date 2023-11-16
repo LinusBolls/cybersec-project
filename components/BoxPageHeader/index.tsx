@@ -10,14 +10,43 @@ export interface BoxPageHeaderProps {
     authorName: string;
     isPublished: boolean;
     boxTitle: string
+    boxId: string;
 }
 export default function BoxPageHeader({
+    boxId,
     isSignedIn,
     authorUrl,
     authorName,
     isPublished,
     boxTitle,
 }: BoxPageHeaderProps) {
+
+    async function publishBox() {
+
+        const res = await fetch(`/api/boxes/${boxId}/publish`, {
+            method: "POST",
+        });
+    }
+    async function unpublishBox() {
+
+        const res = await fetch(`/api/boxes/${boxId}/unpublish`, {
+            method: "POST",
+        });
+    }
+    async function saveBox() {
+
+        const res = await fetch(`/api/boxes/${boxId}`, {
+            method: "PUT",
+            body: JSON.stringify({
+                title: boxTitle,
+                code: {
+                    html: "",
+                    css: "",
+                    js: "",
+                },
+            })
+        });
+    }
 
     return <div className="flex h-16 border-b border-gray-900">
         <div className="flex flex-col justify-center flex-1 h-full pl-4">
@@ -36,9 +65,9 @@ export default function BoxPageHeader({
             }}>{authorName}</Link>
         </div>
         <div className="flex items-center">
-            {isPublished ? <Button className="mt-6">
+            {isPublished ? <Button className="mt-6" onClick={unpublishBox}>
                 Unpublish
-            </Button> : <Button className="mt-6">
+            </Button> : <Button className="mt-6" onClick={publishBox}>
                 Share
             </Button>}
         </div>

@@ -62,7 +62,7 @@ export const getBoxById = async (boxId: string) => {
     return box;
 
 }
-export const updateBoxState = async (userId: string, boxId: string, newState: typeof BoxState[keyof typeof BoxState]) => {
+export const updateBoxState = async (userId: string, boxId: string, state: typeof BoxState[keyof typeof BoxState]) => {
     await initializeDb();
 
     const boxRepository = AppDataSource.getRepository(Box);
@@ -77,7 +77,58 @@ export const updateBoxState = async (userId: string, boxId: string, newState: ty
     if (box.author.id !== userId) {
         throw new Error('User is not authorized to update this box');
     }
-    box.state = newState;
+    box.state = state;
+
+    await boxRepository.save(box);
+
+    return box;
+};
+
+export const updateBoxCode = async (userId: string, boxId: string, html: string, css: string, js: string) => {
+    await initializeDb();
+
+    const boxCodeRepository = AppDataSource.getRepository(BoxCode);
+
+    const boxCode = await boxCodeRepository.findOne({
+        where: {
+            box: {
+                id: boxId,
+            },
+        },
+    });
+
+    if (!boxCode) {
+        throw new Error('BoxCode not found for the specified box');
+    }
+    if (boxCode.box.author.id !== userId) {
+        throw new Error('User is not authorized to update this box');
+    }
+    boxCode.html = html;
+    boxCode.css = css;
+    boxCode.js = js;
+
+    await boxCodeRepository.save(boxCode);
+
+    return boxCode;
+};
+
+export const updateBoxMeta = async (userId: string, boxId: string, title: string) => {
+    await initializeDb();
+
+    const boxRepository = AppDataSource.getRepository(Box);
+
+    const box = await boxRepository.findOne({
+        where: {
+            id: boxId,
+        },
+    });
+    if (!box) {
+        throw new Error('BoxCode not found for the specified box');
+    }
+    if (box.author.id !== userId) {
+        throw new Error('User is not authorized to update this box');
+    }
+    box.title = title;
 
     await boxRepository.save(box);
 
