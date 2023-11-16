@@ -54,7 +54,7 @@ export default function Editor({ initialBox }: EditorProps) {
             }} value={js} className="w-1/3 h-1/3 bg-gray-900" />
         </div>
 
-        <h1 className="text-red-300">Linus's Box</h1>
+        <h1 className="text-red-300">{initialBox.meta.title}</h1>
         <iframe ref={iframeRef} sandbox="allow-scripts" srcDoc={srcDoc} className="w-2/3 h-full bg-gray-900" />
     </div>
 }

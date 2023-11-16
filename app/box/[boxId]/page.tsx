@@ -2,13 +2,13 @@
 import Editor from "@/components/Editor";
 import { getServerSideAuth } from "@/services/serverSideAuthService";
 
-export default async function Page() {
+export default async function Page({ params: { boxId } }: { params: { boxId: string } }) {
 
     const { isSignedIn } = getServerSideAuth();
 
     const defaultBox = {
         meta: {
-            title: "Linus's Box",
+            title: "Linus's Box " + boxId,
             author: {
                 name: "Linus Bolls",
                 id: "linus-bolls",
