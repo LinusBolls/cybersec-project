@@ -9,7 +9,9 @@ export function getServerSideAuth() {
 
         return {
             isSignedIn: true,
-            session: accessTokenPayload,
+            session: {
+                userId: accessTokenPayload.sub,
+            },
         } as const;
     } catch (err) {
         return {
