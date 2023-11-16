@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 import { RefreshToken } from './RefreshToken';
 import Permission from '@/permissions';
+import { Box } from './Box';
 
 @Entity()
 export class User {
@@ -19,4 +20,7 @@ export class User {
 
   @OneToMany(() => RefreshToken, refreshToken => refreshToken.user)
   refreshTokens!: RefreshToken[];
+
+  @OneToMany(() => Box, box => box.author)
+  boxes!: Box[];
 }

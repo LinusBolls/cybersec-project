@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import type {Relation} from "typeorm";
 import { User } from './User';
 
 @Entity()
@@ -13,5 +14,5 @@ export class RefreshToken {
   expiryDate!: Date;
 
   @ManyToOne(() => User, user => user.refreshTokens)
-  user!: User;
+  user!: Relation<User>;
 }
