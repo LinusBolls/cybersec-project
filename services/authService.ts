@@ -62,7 +62,7 @@ const loginUser = async (email: string, password: string) => {
     return { accessToken, refreshToken: "" };
 };
 
-const registerUser = async (email: string, password: string) => {
+const registerUser = async (email: string, password: string, name: string) => {
 
     await initializeDb();
     const userRepository = AppDataSource.getRepository(User);
@@ -72,7 +72,7 @@ const registerUser = async (email: string, password: string) => {
         throw new Error('Email already in use');
     }
     const passwordHash = await hashPassword(password);
-    const newUser = userRepository.create({ email, passwordHash, permissions: [] });
+    const newUser = userRepository.create({ email, passwordHash, name, permissions: [] });
     await userRepository.save(newUser);
 
     const accessToken = getAccessToken(newUser.id);

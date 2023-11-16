@@ -35,7 +35,7 @@ export default async function Page() {
       title: i.title,
       author: {
         id: i.author.id,
-        name: i.author.email,
+        name: i.author.name,
       },
       boxCode: {
         html: i.boxCode.html,

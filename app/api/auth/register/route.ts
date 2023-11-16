@@ -6,9 +6,9 @@ import Env from "@/env";
 export async function POST(req: NextRequest) {
 
   try {
-    const { email, password } = await req.json();
+    const { email, password, name } = await req.json();
 
-    const { accessToken, refreshToken } = await registerUser(email, password);
+    const { accessToken, refreshToken } = await registerUser(email, password, name);
 
     const res = NextResponse.json({ ok: 1 }, { status: 201 });
 
