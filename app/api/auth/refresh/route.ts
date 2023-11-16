@@ -1,17 +1,27 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import { refreshToken } from '../../../../services/authService';
+import Config from '@/config';
 
-export async function POST(req: NextApiRequest, res: NextApiResponse) {
+export async function POST(req: NextRequest) {
 
   try {
-    const { oldToken } = req.body; // Adjust based on how you send the refresh token
-    const newToken = await refreshToken(oldToken);
-    res.status(200).json({ newToken });
-  } catch (error) {
-    if (error instanceof Error) {
-      res.status(400).json({ message: error.message });
-  } else {
-    res.status(400).json({ message: "Unknown error" });
-  }
+    const reqRefreshToken = req.cookies.get("refresh_token");
+
+    const newToken = await refreshToken(reqRefreshToken?.value!);
+
+    const res = NextResponse.json({ ok: 1 }, { status: 200 });
+
+    res.cookies.set("access_token", `Bearer ${newToken}`, {
+      httpOnly: true,
+      secure: true,
+      maxAge: Config.accessTokenExpiryMs / 1000,
+    });
+    return res;
+
+  } catch (err) {
+
+    const message = err instanceof Error ? (err.message || "Unknown error") : "Unexpected error";
+
+    NextResponse.json({ message }, { status: 400 });
   }
 }
