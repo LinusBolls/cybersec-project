@@ -11,7 +11,7 @@ export default async function Page() {
 
   const boxes = await getBoxes({ state: "PUBLISHED" });
 
-  const { isSignedIn } = getServerSideAuth();
+  const { isSignedIn } = await getServerSideAuth();
 
   return <div className="flex flex-col w-screen h-screen bg-black">
     <DefaultHeader isSignedIn={isSignedIn} />

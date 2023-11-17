@@ -8,15 +8,10 @@ export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
 
-    const { accessToken, refreshToken } = await loginUser(email, password);
+    const { refreshToken } = await loginUser(email, password);
 
     const res = NextResponse.json({ ok: 1 }, { status: 200 });
 
-    res.cookies.set("access_token", accessToken, {
-      httpOnly: true,
-      secure: true,
-      maxAge: Config.accessTokenExpiryMs / 1000,
-    });
     res.cookies.set("refresh_token", refreshToken, {
       httpOnly: true,
       secure: true,

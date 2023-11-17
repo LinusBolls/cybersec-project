@@ -1,28 +1,36 @@
 import { User } from '../models/User';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
 import { RefreshToken } from '../models/RefreshToken';
 import Config from '../config';
 import Env from '../env';
 import { AppDataSource, initializeDb } from '../ormconfig';
+import * as jose from "jose";
 
-const getAccessToken = (userId: string) => {
-    const accessToken = jwt.sign({ sub: userId }, Env.accessTokenSecret, { expiresIn: Config.accessTokenExpiryMs });
+const getAccessToken = async (userId: string) => {
+    const accessToken = await new jose.SignJWT({ sub: userId })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setIssuedAt()
+        .setExpirationTime(Date.now() + Config.accessTokenExpiryMs)
+        .sign(new TextEncoder().encode(Env.accessTokenSecret));
 
     return accessToken;
 }
-const getRefreshToken = (userId: string) => {
-    const refreshToken = jwt.sign({ sub: userId }, Env.refreshTokenSecret, { expiresIn: Config.refreshTokenExpiryMs });
+const getRefreshToken = async (userId: string) => {
+    const refreshToken = await new jose.SignJWT({ sub: userId })
+        .setProtectedHeader({ alg: 'HS256' })
+        .setIssuedAt()
+        .setExpirationTime(Date.now() + Config.refreshTokenExpiryMs)
+        .sign(new TextEncoder().encode(Env.refreshTokenSecret));
 
-    return refreshToken;
+    return refreshToken
 }
-export const verifyAccessToken = (token: string) => {
-    const data = jwt.verify(token, Env.accessTokenSecret) as { sub: string, iat: number, exp: number };
+export const verifyAccessToken = async (token: string) => {
+    const data = await jose.jwtVerify<{ sub: string, iat: number, exp: number }>(token, new TextEncoder().encode(Env.accessTokenSecret));
 
     return data;
 }
-export const verifyRefreshToken = (token: string) => {
-    const data = jwt.verify(token, Env.refreshTokenSecret) as { sub: string, iat: number, exp: number };
+export const verifyRefreshToken = async (token: string) => {
+    const data = await jose.jwtVerify<{ sub: string, iat: number, exp: number }>(token, new TextEncoder().encode(Env.refreshTokenSecret));
 
     return data;
 }
@@ -57,9 +65,25 @@ const loginUser = async (email: string, password: string) => {
     if (!isValid) {
         throw new Error('Invalid credentials');
     }
-    const accessToken = getAccessToken(user.id);
+    const refreshToken = await getRefreshToken(user.id);
 
-    return { accessToken, refreshToken: "" };
+    return { refreshToken };
+};
+
+export const getNewAccessToken = async (refreshTokenData: { sub: string, iat: number, exp: number }) => {
+
+    await initializeDb();
+
+    const userRepository = AppDataSource.getRepository(User);
+
+    const user = await userRepository.findOneBy({ id: refreshTokenData.sub });
+
+    if (!user) {
+        throw new Error('User not found');
+    }
+    const refreshToken = await getRefreshToken(user.id);
+
+    return { refreshToken };
 };
 
 const registerUser = async (email: string, password: string, name: string) => {
@@ -79,51 +103,8 @@ const registerUser = async (email: string, password: string, name: string) => {
     const newUser = userRepository.create({ email, passwordHash, name, permissions: [] });
     await userRepository.save(newUser);
 
-    const accessToken = getAccessToken(newUser.id);
+    const refreshToken = await getRefreshToken(newUser.id);
 
-    return { accessToken, refreshToken: "" };
+    return { refreshToken };
 };
-const refreshToken = async (oldToken: string) => {
-
-    await initializeDb();
-
-    if (!oldToken) {
-        throw new Error('No token provided');
-    }
-
-    let payload: ReturnType<typeof verifyRefreshToken> | null = null;
-    try {
-        payload = verifyRefreshToken(oldToken);
-    } catch (e) {
-        throw new Error('Invalid token');
-    }
-
-    const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
-
-    const storedToken = await refreshTokenRepository.findOneBy({ token: oldToken });
-
-    if (!storedToken || storedToken.expiryDate.getTime() < new Date().getTime()) {
-        throw new Error('Invalid or expired token');
-    }
-
-    const user = storedToken.user;
-    const newAccessToken = getAccessToken(user.id);
-
-    // Optionally create a new refresh token
-    const newRefreshToken = getRefreshToken(user.id);
-
-    // Save new refresh token in the database and delete the old one
-    await refreshTokenRepository.delete({ token: oldToken });
-
-    const newStoredToken = refreshTokenRepository.create({
-        user: user,
-        token: newRefreshToken,
-        expiryDate: new Date(new Date().getTime() + Config.refreshTokenExpiryMs),
-    });
-
-    await refreshTokenRepository.save(newStoredToken);
-
-    return { newAccessToken, newRefreshToken };
-};
-
-export { loginUser, registerUser, refreshToken };
+export { loginUser, registerUser };

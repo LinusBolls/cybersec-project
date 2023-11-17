@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import BoxEditingModal from "../BoxEditingModal";
-import BoxPageHeader, { BoxPageHeaderProps } from "../BoxPageHeader";
+import BoxPageHeader from "../BoxPageHeader";
 import Editor, { EditorProps } from "../Editor";
 import { useBoxDraftStore } from "@/stores/boxDraft.store";
 
@@ -18,13 +18,10 @@ export interface BoxViewProps extends EditorProps {
     boxDescription: string;
 }
 export default function BoxView({
-
     box,
-
     isSignedIn,
     authorUrl,
     authorName,
-    isPublished: initialIsPublished,
     boxTitle,
     boxId,
     isOwnBox,
@@ -75,9 +72,10 @@ export default function BoxView({
             }),
         }).then(() => updateState("PUBLISHED"));
     }
+    console.log("sache:", boxDraft.title.length > 0 ? boxDraft.state : box.state);
 
     return <>
-        <BoxPageHeader isOwnBox={isOwnBox} boxId={boxId} isSignedIn={isSignedIn} authorUrl={authorUrl} authorName={authorName} isPublished={boxDraft.state === "PUBLISHED"} boxTitle={boxTitle} onPublish={publishBox} onUnpublish={unpublishBox} onSave={saveBox} />
+        <BoxPageHeader isOwnBox={isOwnBox} boxId={boxId} isSignedIn={isSignedIn} authorUrl={authorUrl} authorName={authorName} isPublished={(boxDraft.title.length > 0 ? boxDraft.state : box.state) === "PUBLISHED"} boxTitle={boxTitle} onPublish={publishBox} onUnpublish={unpublishBox} onSave={saveBox} />
         <Editor initialBox={initialBox} />
         <BoxEditingModal initialData={{ title: boxTitle, description: boxDescription }} isOpen={false} onClose={() => { }} onSubmit={() => { }} />
     </>

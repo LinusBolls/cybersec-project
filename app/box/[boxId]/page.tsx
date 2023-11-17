@@ -9,7 +9,7 @@ import BoxView from "@/components/BoxView";
 
 export default async function Page({ params: { boxId } }: { params: { boxId: string } }) {
 
-    const { isSignedIn, session } = getServerSideAuth();
+    const { isSignedIn, session } = await getServerSideAuth();
 
     const box = await getBoxById(session?.userId, boxId);
 

@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     try {
         const accessToken = req.cookies.get("access_token")?.value;
 
-        const user = verifyAccessToken(accessToken!);
+        const user = await verifyAccessToken(accessToken!);
 
         const box = await createBox(user.sub, []);
 

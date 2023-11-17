@@ -1,11 +1,11 @@
 import { cookies } from "next/headers";
 import { verifyAccessToken } from "./authService";
 
-export function getServerSideAuth() {
+export async function getServerSideAuth() {
     try {
         const accessToken = cookies().get("access_token")?.value;
 
-        const accessTokenPayload = verifyAccessToken(accessToken!);
+        const accessTokenPayload = await verifyAccessToken(accessToken!);
 
         return {
             isSignedIn: true,

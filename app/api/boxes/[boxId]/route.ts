@@ -9,7 +9,7 @@ export async function PUT(req: NextRequest, { params: { boxId } }: { params: { b
     try {
         const accessToken = req.cookies.get("access_token")?.value;
 
-        const user = verifyAccessToken(accessToken!);
+        const user = await verifyAccessToken(accessToken!);
 
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
