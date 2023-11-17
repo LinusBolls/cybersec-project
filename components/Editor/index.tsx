@@ -1,12 +1,20 @@
 "use client";
 
+import { useBoxDraftStore } from "@/stores/boxDraft.store";
 import _ from "lodash";
 import { useEffect, useRef, useState } from "react";
+import CodeMirror from "@uiw/react-codemirror";
+import { vscodeDark } from "@uiw/codemirror-theme-vscode";
+import { javascript as javascriptLang } from "@codemirror/lang-javascript";
+import { html as htmlLang } from "@codemirror/lang-html";
+import { css as cssLang } from "@codemirror/lang-css";
 
 export interface EditorProps {
     initialBox: any;
 }
 export default function Editor({ initialBox }: EditorProps) {
+
+    const { boxDraft, actions: { updateCode } } = useBoxDraftStore();
 
     const [html, setHtml] = useState(initialBox.code.html);
     const [css, setCss] = useState(initialBox.code.css);
@@ -25,19 +33,11 @@ export default function Editor({ initialBox }: EditorProps) {
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
     useEffect(() => {
-        fetch('/api/health').then(res => res.json()).then(console.log);
+        console.log("onCodeChange useEffect");
 
-        // if (iframeRef.current) {
-        //     iframeRef.current.contentWindow!.addEventListener('load', () => {
-        //     });
-        // }
-    }, []);
+        updateSrcDoc();
 
-    // const ding = _.debounce(updateSrcDoc, 5000, { leading: false, trailing: true });
-    const onCodeChange = updateSrcDoc;
-
-    useEffect(() => {
-        onCodeChange();
+        updateCode(html, css, js);
     }, [html, css, js]);
 
     return <div style={{
@@ -49,7 +49,36 @@ export default function Editor({ initialBox }: EditorProps) {
         overflow: "hidden",
     }}>
         <div className="flex p-1 gap-1 h-2/5 bg-black">
-            <textarea onChange={(e) => {
+            <CodeMirror
+                placeholder="<!-- add HTML code to your box -->"
+                theme={vscodeDark}
+                extensions={[htmlLang()]}
+                lang="html"
+                value={html}
+                onChange={value => setHtml(value)}
+                className="bg-gray-900 w-1/3"
+                height="100%"
+            />
+            <CodeMirror
+                placeholder="/* add CSS code to your box */"
+                theme={vscodeDark}
+                extensions={[cssLang()]}
+                lang="css"
+                value={css}
+                onChange={value => setCss(value)}
+                className="bg-gray-900 w-1/3"
+                height="100%"
+            />
+            <CodeMirror
+                placeholder="// add JavaScript code to your box"
+                theme={vscodeDark}
+                extensions={[javascriptLang()]}
+                value={js}
+                onChange={value => setJs(value)}
+                className="bg-gray-900 w-1/3"
+                height="100%"
+            />
+            {/* <textarea onChange={(e) => {
                 setHtml(e.currentTarget.value);
             }} value={html} className="w-full h-full bg-gray-900" />
             <textarea onChange={(e) => {
@@ -57,7 +86,7 @@ export default function Editor({ initialBox }: EditorProps) {
             }} value={css} className="w-full h-full bg-gray-900" />
             <textarea onChange={(e) => {
                 setJs(e.currentTarget.value);
-            }} value={js} className="w-full h-full bg-gray-900" />
+            }} value={js} className="w-full h-full bg-gray-900" /> */}
         </div>
 
         {/* <h1 className="text-red-300">{initialBox.meta.title}</h1> */}

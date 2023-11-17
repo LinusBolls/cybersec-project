@@ -10,22 +10,30 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@codemirror/lang-css": "^6.2.1",
+    "@codemirror/lang-html": "^6.4.6",
+    "@codemirror/lang-javascript": "^6.2.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@material-tailwind/react": "^2.1.4",
     "@mui/icons-material": "^5.14.18",
     "@mui/material": "^5.14.18",
+    "@uiw/codemirror-theme-vscode": "^4.21.20",
+    "@uiw/react-codemirror": "^4.21.20",
     "bcryptjs": "^2.4.3",
     "formik": "^2.4.5",
+    "i": "^0.3.7",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mysql": "file:./shims/mysql",
     "next": "14.0.2",
+    "npm": "^10.2.4",
     "pg": "^8.11.3",
     "react": "^18",
     "react-dom": "^18",
     "react-native-sqlite-storage": "file:./shims/react-native-sqlite-storage",
-    "typeorm": "^0.3.17"
+    "typeorm": "^0.3.17",
+    "zustand": "^4.4.6"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
