@@ -65,12 +65,17 @@ export default function BoxPageHeader({
             }}>{authorName}</Link>
         </div>
         <div className="flex items-center">
-            {isPublished ? <Button className="mt-6" onClick={unpublishBox}>
+            {isOwnBox && <>
+                {isPublished ? <Button onClick={onUnpublish} className="bg-red-600">
                 Unpublish
-            </Button> : <Button className="mt-6" onClick={publishBox}>
-                Share
-            </Button>}
+                </Button> : <Button onClick={onPublish} className="bg-blue-600">
+                    Publish
+                </Button>}
+                <Button onClick={onSave} className="bg-blue-600">
+                    Save changes
+                </Button>
+            </>}
         </div>
-        {isSignedIn ? <Link href="/profile" className="flex items-center justify-center h-full aspect-square"><AccountCircleIcon htmlColor='white' fontSize='large' /></Link> : <Link href="/login" className="flex items-center justify-center px-4 rounded-md border-none h-8 bg-white text-black w-min active:bg-gray-100 whitespace-nowrap font-medium">Sign in</Link>}
+        <HeaderAccInfo isSignedIn={isSignedIn} />
     </div>
 }
