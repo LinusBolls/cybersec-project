@@ -1,8 +1,9 @@
 "use client";
 
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { Button } from "@material-tailwind/react";
 import Link from "next/link";
+import { useState } from 'react';
+import HeaderAccInfo from "../HeaderAccInfo";
 
 export interface BoxPageHeaderProps {
     isSignedIn: boolean;
@@ -11,6 +12,11 @@ export interface BoxPageHeaderProps {
     isPublished: boolean;
     boxTitle: string
     boxId: string;
+    isOwnBox: boolean;
+
+    onPublish: () => void;
+    onUnpublish: () => void;
+    onSave: () => void;
 }
 export default function BoxPageHeader({
     boxId,
@@ -18,37 +24,17 @@ export default function BoxPageHeader({
     authorUrl,
     authorName,
     isPublished,
-    boxTitle,
+    boxTitle: initialBoxTitle,
+    isOwnBox,
+
+    onPublish,
+    onUnpublish,
+    onSave,
 }: BoxPageHeaderProps) {
 
-    async function publishBox() {
+    const [boxTitle, setBoxTitle] = useState(initialBoxTitle);
 
-        const res = await fetch(`/api/boxes/${boxId}/publish`, {
-            method: "POST",
-        });
-    }
-    async function unpublishBox() {
-
-        const res = await fetch(`/api/boxes/${boxId}/unpublish`, {
-            method: "POST",
-        });
-    }
-    async function saveBox() {
-
-        const res = await fetch(`/api/boxes/${boxId}`, {
-            method: "PUT",
-            body: JSON.stringify({
-                title: boxTitle,
-                code: {
-                    html: "",
-                    css: "",
-                    js: "",
-                },
-            })
-        });
-    }
-
-    return <div className="flex h-16 border-b border-gray-900">
+    return <div className="flex h-16 border-b border-gray-900 pr-4">
         <div className="flex flex-col justify-center flex-1 h-full pl-4">
             <h1 style={{
                 fontSize: "14px",
