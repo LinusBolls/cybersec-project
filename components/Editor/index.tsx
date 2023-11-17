@@ -90,6 +90,6 @@ export default function Editor({ initialBox }: EditorProps) {
         </div>
 
         {/* <h1 className="text-red-300">{initialBox.meta.title}</h1> */}
-        <iframe ref={iframeRef} sandbox="allow-forms allow-modals allow-pointer-lock allow-same-origin allow-scripts allow-presentation" srcDoc={srcDoc} className="flex flex-1 bg-gray-900" />
+        <iframe ref={iframeRef} sandbox="allow-forms allow-modals allow-pointer-lock allow-scripts allow-presentation" srcDoc={srcDoc} className="flex flex-1 bg-gray-900" />
     </div>
 }

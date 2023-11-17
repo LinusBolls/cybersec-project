@@ -52,7 +52,7 @@ export default function BoxGrid({
                             <div className="p-4">
                                 <h5 className="text-lg font-semibold mb-2">{i.title}</h5>
                                 <p className="text-gray-600">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                                <iframe sandbox="allow-forms allow-modals allow-pointer-lock allow-same-origin allow-scripts allow-presentation" scrolling="no" srcDoc={getSrcDoc(i)} className="w-full h-full flex flex-1 bg-gray-900" />
+                                <iframe sandbox="allow-forms allow-modals allow-pointer-lock allow-scripts allow-presentation" scrolling="no" srcDoc={getSrcDoc(i)} className="w-full h-full flex flex-1 bg-gray-900" />
                             </div>
                         </Link>
                     </Card>
