@@ -50,17 +50,24 @@ export const getBoxes = async ({ state }: { state?: keyof typeof BoxState } = {}
         },
     }); return boxes;
 }
-export const getBoxById = async (boxId: string) => {
+export const getBoxById = async (userId: string | null | undefined, boxId: string) => {
 
     await initializeDb();
 
     const boxRepository = AppDataSource.getRepository(Box);
 
-    const [box] = await boxRepository.findBy({
-        id: boxId,
+    const box = await boxRepository.findOne({
+        where: {
+            id: boxId,
+        },
+        relations: {
+            author: true,
+        },
     });
+    if (box?.author?.id !== userId && box?.state !== "PUBLISHED") {
+        throw new Error("User is not authorized to view this box");
+    }
     return box;
-
 }
 export const updateBoxState = async (userId: string, boxId: string, state: typeof BoxState[keyof typeof BoxState]) => {
     await initializeDb();
@@ -94,6 +101,9 @@ export const updateBoxCode = async (userId: string, boxId: string, html: string,
             box: {
                 id: boxId,
             },
+        },
+        relations: {
+            box: true,
         },
     });
 

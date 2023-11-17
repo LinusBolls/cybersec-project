@@ -1,18 +1,17 @@
 "use server";
 
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Editor from "@/components/Editor";
 import { getBoxById } from "@/services/boxService";
 import { getServerSideAuth } from "@/services/serverSideAuthService";
-import Link from "next/link";
-import { Button } from '@material-tailwind/react';
 import BoxPageHeader from '@/components/BoxPageHeader';
+import BoxEditingModal from "@/components/BoxEditingModal";
+import BoxView from "@/components/BoxView";
 
 export default async function Page({ params: { boxId } }: { params: { boxId: string } }) {
 
     const { isSignedIn, session } = getServerSideAuth();
 
-    const box = await getBoxById(boxId);
+    const box = await getBoxById(session?.userId, boxId);
 
 
     if (!box) {
@@ -38,7 +37,6 @@ export default async function Page({ params: { boxId } }: { params: { boxId: str
     };
 
     return <div className="flex flex-col w-screen h-screen bg-black">
-        <BoxPageHeader boxId={box.id} isSignedIn={isSignedIn} authorUrl={`/users/${box.author.id}`} authorName={box.author.name} isPublished={box.state === "PUBLISHED"} boxTitle={box.title} />
-        <Editor initialBox={boxDto} />
+        <BoxView box={boxDto} isSignedIn={isSignedIn} authorUrl={`/users/${box.author.id}`} authorName={box.author.name} isPublished={box.state === "PUBLISHED"} boxTitle={box.title} boxId={box.id} isOwnBox={isOwnBox} initialBox={boxDto} boxDescription={""} />
     </div >
 }   
