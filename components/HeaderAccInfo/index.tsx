@@ -11,8 +11,8 @@ export default function HeaderAccInfo({
     isSignedIn
 }: HeaderAccInfoProps) {
 
-    return <div className="flex items-center h-full">
-        {isSignedIn ? <Link href="/profile" className="flex items-center justify-center h-full aspect-square">
+    return <div className="flex items-center h-full w-fit shrink-0">
+        {isSignedIn ? <Link href="/profile" className="flex items-center justify-center shrink-0 h-full aspect-square">
             <AccountCircleIcon htmlColor='white' fontSize='large' />
         </Link> :
             <Link href="/login" passHref>

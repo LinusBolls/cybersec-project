@@ -34,7 +34,7 @@ export default function BoxPageHeader({
 
     const [boxTitle, setBoxTitle] = useState(initialBoxTitle);
 
-    return <div className="flex h-16 border-b border-gray-900 pr-4">
+    return <div className="flex h-16 border-b border-gray-900 overflow-hidden">
         <div className="flex flex-col justify-center flex-1 h-full pl-4">
             <h1 style={{
                 fontSize: "14px",
@@ -51,7 +51,7 @@ export default function BoxPageHeader({
             }}>{authorName}</Link>
         </div>
         <div className="flex items-center">
-            {isOwnBox && <>
+            {isOwnBox && <div className="flex gap-4">
                 {isPublished ? <Button onClick={onUnpublish} className="bg-red-600">
                 Unpublish
                 </Button> : <Button onClick={onPublish} className="bg-blue-600">
@@ -60,7 +60,7 @@ export default function BoxPageHeader({
                 <Button onClick={onSave} className="bg-blue-600">
                     Save changes
                 </Button>
-            </>}
+            </div>}
         </div>
         <HeaderAccInfo isSignedIn={isSignedIn} />
     </div>
