@@ -71,6 +71,10 @@ const registerUser = async (email: string, password: string, name: string) => {
     if (existingUser) {
         throw new Error('Email already in use');
     }
+    if (password.length < Config.minPasswordLength) {
+        throw new Error('Password must be at least ' + Config.minPasswordLength + ' characters long');
+    }
+
     const passwordHash = await hashPassword(password);
     const newUser = userRepository.create({ email, passwordHash, name, permissions: [] });
     await userRepository.save(newUser);
